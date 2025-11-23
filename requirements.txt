@@ -1,0 +1,8 @@
+fastapi
+uvicorn
+deepface
+opencv-python
+numpy
+Pillow
+deepface
+tensorflow

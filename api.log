@@ -1,0 +1,10 @@
+Traceback (most recent call last):
+  File "/Users/natashalopes/Desktop/WorkZen- visao computacional/api.py", line 12, in <module>
+    from main import analyze_image_array
+  File "/Users/natashalopes/Desktop/WorkZen- visao computacional/main.py", line 15, in <module>
+    from deepface import DeepFace
+  File "/Users/natashalopes/Desktop/WorkZen- visao computacional/.venv311/lib/python3.11/site-packages/deepface/DeepFace.py", line 18, in <module>
+    from deepface.basemodels import (
+  File "/Users/natashalopes/Desktop/WorkZen- visao computacional/.venv311/lib/python3.11/site-packages/deepface/basemodels/FbDeepFace.py", line 27, in <module>
+    from tensorflow.keras.layers import (
+ImportError: cannot import name 'LocallyConnected2D' from 'tensorflow.keras.layers' (/Users/natashalopes/Desktop/WorkZen- visao computacional/.venv311/lib/python3.11/site-packages/keras/_tf_keras/keras/layers/__init__.py)
