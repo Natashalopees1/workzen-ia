@@ -1,77 +1,173 @@
+# WorkZen IA - API de Detecção de Emoções
 
-## Visão geral
+API REST desenvolvida com FastAPI para análise de emoções em imagens usando DeepFace. O sistema recebe imagens codificadas em base64 e retorna a emoção dominante detectada.
 
-Este projeto simples faz análise facial (detecção de emoção) em imagens usando a biblioteca DeepFace. O script principal é `main.py` e espera imagens no diretório do projeto. Durante a configuração notei que as imagens fornecidas estão no formato AVIF (com extensão `.png`) — o código contém um fallback que usa Pillow para abrir AVIF e converter para um array compatível com OpenCV/DeepFace.
+## 📋 Sobre o Projeto
 
-## O que o código faz
+Este projeto utiliza inteligência artificial para detectar emoções em imagens de rostos. A API processa imagens enviadas em formato base64 e utiliza o modelo DeepFace para identificar a emoção dominante presente na imagem.
 
-- Lê uma imagem (caminho definido em `main.py`).
-- Tenta ler com OpenCV (`cv2.imread`). Se isso falhar (por exemplo, para arquivos AVIF), o código usa Pillow para abrir a imagem e converte para um array BGR.
-- Chama `DeepFace.analyze` para extrair emoções (ação: `emotion`) e imprime o resultado.
+## 🚀 Funcionalidades
 
-## Bibliotecas usadas (breve descrição)
+- ✅ Análise de emoções em imagens de rostos
+- ✅ API REST com FastAPI
+- ✅ Suporte a imagens em formato base64
+- ✅ Retorno da emoção dominante detectada
 
-- opencv-python (cv2): leitura/manipulação de imagens e interoperabilidade com DeepFace.
-- Pillow (PIL): fallback para abrir imagens em formatos que a build do OpenCV local não reconhece (ex.: AVIF). Usado para abrir e converter para RGB antes de transformar em numpy array.
-- numpy: representação em array das imagens (shape HxWx3) e conversão RGB->BGR.
-- deepface: framework de análise facial que encapsula modelos para emoção, idade, gênero e verificação de rosto; usamos a função `DeepFace.analyze` com `actions=("emotion",)`.
-- tensorflow / keras: dependências necessárias do DeepFace para carregar e executar os modelos (instaladas automaticamente quando você instala `deepface`).
+## 🛠️ Tecnologias Utilizadas
 
-## Como rodar (macOS / zsh)
+- **FastAPI**: Framework web moderno e rápido para construção de APIs
+- **DeepFace**: Biblioteca de análise facial com deep learning
+- **OpenCV**: Processamento de imagens
+- **TensorFlow**: Framework de machine learning
+- **Uvicorn**: Servidor ASGI para FastAPI
+- **Pillow**: Manipulação de imagens
+- **NumPy**: Computação numérica
 
-1) Garanta que você tem um Python apropriado disponível. Recomendamos usar Python 3.11 (no meu sistema usei `/opt/homebrew/bin/python3.11`). O Homebrew Python 3.14 pode ser marcado como "externally managed" e impedir instalações via pip (PEP 668).
+## 📦 Instalação
 
-2) Criar e ativar um virtualenv (exemplo usando Python 3.11):
+### Pré-requisitos
 
+- Python 3.8 ou superior
+- pip (gerenciador de pacotes Python)
+
+### Passos para instalação
+
+1. Clone o repositório:
 ```bash
-/opt/homebrew/bin/python3.11 -m venv .venv311
-source .venv311/bin/activate
+git clone <url-do-repositorio>
+cd workzen-ia
 ```
 
-3) Atualizar ferramentas e instalar dependências mínimas:
-
+2. Crie um ambiente virtual (recomendado):
 ```bash
-python -m pip install --upgrade pip setuptools wheel
-python -m pip install opencv-python deepface pillow numpy
-# se não precisar de UI (ex.: em servidor), considere opencv-python-headless
+python -m venv venv
 ```
 
-4) Rodar o projeto:
+3. Ative o ambiente virtual:
 
+**Windows:**
 ```bash
-source .venv311/bin/activate
-python main.py
+venv\Scripts\activate
 ```
 
-Observação: `deepface` fará download automático de pesos de modelos (armazenados em `~/.deepface/weights/`), então a primeira execução pode demorar para baixar arquivos.
-
-## Notas sobre formatos de imagem e o fallback
-
-- Se `cv2.imread` retornar `None` (p.ex. para AVIF), `main.py` tentará abrir a imagem com Pillow e convertê-la para um numpy array BGR. Isso resolve o problema com imagens AVIF quando a build do OpenCV local não tem suporte a AVIF.
-- Se preferir, você pode converter as imagens para PNG/JPEG usando Pillow antes de rodar.
-
-
-## Nova API: análise via HTTP
-
-Criei um arquivo `api.py` que expõe uma API FastAPI com um endpoint POST `/analyze` que recebe JSON com a chave `image_base64` (imagem em base64 ou data URI) e retorna a emoção dominante e as probabilidades por emoção.
-
-Exemplo de payload JSON:
-
-```json
-{ "image_base64": "data:image/png;base64,iVBORw0KG..." }
+**Linux/Mac:**
+```bash
+source venv/bin/activate
 ```
 
-Para rodar a API localmente (após criar e ativar o virtualenv e instalar dependências):
+4. Instale as dependências:
+```bash
+pip install -r requirements.txt
+```
+
+## 🎯 Como Usar
+
+### Iniciando o servidor
+
+Execute o seguinte comando para iniciar a API:
 
 ```bash
-# ativar venv
-source .venv311/bin/activate
-# instalar dependências (se não usou requirements.txt ainda)
-python -m pip install -r requirements.txt
-# rodar a API
 python api.py
 ```
 
-Por padrão o servidor será executado em `http://0.0.0.0:8000`. Você pode testar com `curl` ou com o Swagger UI em `http://127.0.0.1:8000/docs`.
+A API estará disponível em `http://localhost:8000`
 
+### Documentação interativa
+
+Após iniciar o servidor, acesse:
+- **Swagger UI**: `http://localhost:8000/docs`
+- **ReDoc**: `http://localhost:8000/redoc`
+
+### Endpoint disponível
+
+#### POST `/face/analyze`
+
+Analisa uma imagem e retorna a emoção dominante detectada.
+
+**Request Body:**
+```json
+{
+  "image_base64": "string_base64_da_imagem"
+}
+```
+
+**Response:**
+```json
+{
+  "emotion": "happy"
+}
+```
+
+**Exemplo de uso com cURL:**
+```bash
+curl -X POST "http://localhost:8000/face/analyze" \
+  -H "Content-Type: application/json" \
+  -d '{"image_base64": "iVBORw0KGgoAAAANSUhEUgAA..."}'
+```
+
+**Exemplo de uso com Python:**
+```python
+import requests
+import base64
+
+# Codificar imagem em base64
+with open("caminho/para/imagem.jpg", "rb") as image_file:
+    encoded_string = base64.b64encode(image_file.read()).decode('utf-8')
+
+# Enviar requisição
+response = requests.post(
+    "http://localhost:8000/face/analyze",
+    json={"image_base64": encoded_string}
+)
+
+print(response.json())
+```
+
+## 📁 Estrutura do Projeto
+
+```
+workzen-ia/
+├── api.py              # API FastAPI principal
+├── main.py             # Função de análise de imagens
+├── requirements.txt    # Dependências do projeto
+├── README.md          # Este arquivo
+└── fotos/             # Diretório com imagens de exemplo
+```
+
+## ⚙️ Configuração
+
+A API está configurada para rodar na porta `8000` por padrão. Para alterar a porta, edite o arquivo `api.py`:
+
+```python
+uvicorn.run("api:app", host="0.0.0.0", port=8000, reload=False)
+```
+
+## 🔍 Emoções Detectadas
+
+O modelo DeepFace pode detectar as seguintes emoções:
+- `angry` (raiva)
+- `disgust` (nojo)
+- `fear` (medo)
+- `happy` (felicidade)
+- `sad` (tristeza)
+- `surprise` (surpresa)
+- `neutral` (neutro)
+
+## ⚠️ Observações
+
+- A primeira execução pode demorar mais tempo, pois o DeepFace precisa baixar os modelos necessários
+- Certifique-se de que as imagens enviadas contenham rostos visíveis para melhor precisão
+- O processamento de imagens grandes pode consumir mais recursos
+
+## 📝 Licença
+
+Este projeto é de uso livre para fins educacionais e comerciais.
+
+## 🤝 Contribuindo
+
+Contribuições são bem-vindas! Sinta-se à vontade para abrir issues ou pull requests.
+
+## 📧 Contato
+
+Para dúvidas ou sugestões, entre em contato através dos canais do projeto.
 
