@@ -8,7 +8,7 @@ class ImageRequest(BaseModel):
 app = FastAPI(title="Emotion Detection API")
 
 @app.post("/face/analyze")
-async def analyze_image(req: ImageRequest):
+async def analyze_face(req: ImageRequest):
     """Recebe JSON com chave `image_base64` contendo a imagem codificada em base64.
     Retorna a emoção dominante e as probabilidades por emoção.
     """
